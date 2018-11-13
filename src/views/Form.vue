@@ -7,7 +7,10 @@
     </el-form-item>
 
     <el-form-item label="停车类型">
-      <el-select v-model="ruleForm.parkFeeParkType" placeholder="请选择">
+      <el-select
+        v-model="ruleForm.parkFeeParkType"
+        placeholder="请选择"
+        filterable>
         <el-option
           v-for="item in parkTypeList"
           :key="item.value"
@@ -26,9 +29,15 @@
     </el-form-item>
 
     <el-form-item label="车辆">
-      <el-select v-model="ruleForm.parkFeeCarParkId" placeholder="请输入至少4个字符">
+      <el-select
+        v-model="ruleForm.parkFeeCarParkId"
+        placeholder="请输入至少4个字符"
+        filterable
+        remote
+        :remote-method="getCarList"
+        :loading="car.loading">
         <el-option
-          v-for="item in carList"
+          v-for="item in car.list"
           :key="item.car_id"
           :value="item.car_id"
           :label="item.car_no">
@@ -67,8 +76,11 @@ export default {
         parkFeeUseCustomCarPark: false,
         parkFeeCarStatus: '',
       },
+      car: {
+        list: [],
+        loading: false
+      },
       parkTypeList: [],
-      carList: [],
       orderList: [],
       rules: {
 
@@ -82,10 +94,17 @@ export default {
     })
   },
   methods: {
-    getCarList() {
-      this.BaseApi.car.getCarList((res) => {
-        this.carList = res.data.dataList;
-      })
+    getCarList(query) {
+      if (query !== '') {
+        this.car.loading = true;
+        this.BaseApi.car.getCarList((res) => {
+          this.car.loading = false;
+          this.car.list = res.data.dataList;
+        })
+      } else {
+        this.car.loading = false;
+        this.car.list = [];
+      }
     },
     getOrderList() {
       this.BaseApi.order.getOrderList((res) => {
