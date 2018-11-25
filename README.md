@@ -1,4 +1,4 @@
-# vue-expense-reimburse
+# vue-stack-demo
 
 ## Project setup
 ```
